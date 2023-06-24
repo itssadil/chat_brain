@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "956849469780",
+    "project_id": "chat-brain-adfa2",
+    "storage_bucket": "chat-brain-adfa2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956849469780:android:23cd19042578e08be330c1",
+        "android_client_info": {
+          "package_name": "com.adiltapadar.chatbrain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "956849469780-it17a2qll988kk1jle4c4js31cbiefuq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.adiltapadar.chatbrain",
+            "certificate_hash": "4c79f447d427f1101b5f21036b53836ecb24e462"
+          }
+        },
+        {
+          "client_id": "956849469780-rem4hb8gr90qt1m4n42rabb1ds474qdb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuHtnROVnpa_OnclnH4zeXwZeyhmdM7GU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "956849469780-rem4hb8gr90qt1m4n42rabb1ds474qdb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
