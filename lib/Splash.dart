@@ -47,7 +47,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   }
 
   void myTimer() {
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
