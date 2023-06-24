@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:chatbrain/ui/chatMsg.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../apis/chatApi.dart';
 import '../providers/msgListProvider.dart';
 import '../widgets/msgBody.dart';
 
@@ -30,8 +30,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void sendMsgToChatGPT(String msgForGpt) async {
-    // var result = await FirebaseFirestore.instance.collection('myApi').get();
-    // if (result.docs[0][""]) {}
+    var result = await FirebaseFirestore.instance.collection('myApi').get();
     Uri uri = Uri.parse("https://api.openai.com/v1/chat/completions");
 
     Map<String, dynamic> body = {
@@ -46,7 +45,8 @@ class _HomePageState extends State<HomePage> {
       uri,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${APIKey.apiKey}",
+        "Authorization": "Bearer ${result.docs[0]["apiKey"]}",
+        // "Authorization": "Bearer ${APIKey.apiKey}",
       },
       body: json.encode(body),
     );
