@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import '../providers/msgListProvider.dart';
+import '../providers/speechToTextProvider.dart';
 import '../widgets/msgBody.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,12 +22,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController _myMsgController = TextEditingController();
+  SpeechToText speechToText = SpeechToText();
+
+  String assistantAnswer = "";
 
   void submitMsg(String text) {
     var chatMsgProvider = Provider.of<MsgListProvider>(context, listen: false);
     chatMsgProvider.addMsgValue(
-        FirebaseAuth.instance.currentUser!.uid, _myMsgController.text, true);
-    sendMsgToChatGPT(_myMsgController.text);
+        FirebaseAuth.instance.currentUser!.uid, text, true);
+    sendMsgToChatGPT(text);
     _myMsgController.clear();
   }
 
@@ -36,6 +41,7 @@ class _HomePageState extends State<HomePage> {
     Map<String, dynamic> body = {
       "model": "gpt-3.5-turbo",
       "messages": [
+        {"role": "assistant", "content": assistantAnswer},
         {"role": "user", "content": msgForGpt}
       ],
       "max_tokens": 500,
@@ -46,7 +52,6 @@ class _HomePageState extends State<HomePage> {
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer ${result.docs[0]["apiKey"]}",
-        // "Authorization": "Bearer ${APIKey.apiKey}",
       },
       body: json.encode(body),
     );
@@ -55,6 +60,7 @@ class _HomePageState extends State<HomePage> {
 
     String reply = parsedResponse["choices"][0]["message"]["content"];
     String sender = parsedResponse["choices"][0]["message"]["role"];
+    assistantAnswer = reply;
 
     var chatMsgProvider = Provider.of<MsgListProvider>(context, listen: false);
     chatMsgProvider.addMsgValue(sender, reply, false);
@@ -128,6 +134,13 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
+              Consumer<SpeachToTextProvider>(
+                builder: (context, isListening, child) {
+                  return isListening.isListening
+                      ? Center(child: Text(isListening.recordText))
+                      : Center();
+                },
+              ),
               Consumer<MsgListProvider>(
                 builder: (context, myMsg, child) {
                   return Padding(
@@ -142,17 +155,53 @@ class _HomePageState extends State<HomePage> {
                             controller: _myMsgController,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(15),
                               ),
                               contentPadding: EdgeInsets.all(10),
-                              labelText: "Message",
-                              suffixIcon: IconButton(
-                                icon: Icon(Icons.send),
-                                onPressed: () =>
-                                    submitMsg(_myMsgController.text),
+                              labelText: "Send a message",
+                              hintText: "Message...",
+                              suffixIcon: GestureDetector(
+                                child: Icon(Icons.mic),
+                                onLongPress: () async {
+                                  var LongPressPro =
+                                      Provider.of<SpeachToTextProvider>(context,
+                                          listen: false);
+                                  LongPressPro.isListeningValue(true);
+                                  var available =
+                                      await speechToText.initialize();
+                                  if (available) {
+                                    speechToText.listen(onResult: (result) {
+                                      LongPressPro.changeRecordText(
+                                          result.recognizedWords);
+                                    });
+                                  }
+                                },
+                                onLongPressUp: () {
+                                  var LongPressPro =
+                                      Provider.of<SpeachToTextProvider>(context,
+                                          listen: false);
+                                  submitMsg(LongPressPro.recordText);
+                                  LongPressPro.isListeningValue(false);
+                                  LongPressPro.changeRecordText("");
+                                  speechToText.cancel();
+                                },
                               ),
                             ),
                             // onSubmitted: (value) => myMsg.addMsgValue(value),
+                          ),
+                        ),
+                        ElevatedButton(
+                          child: Icon(
+                            Icons.send,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            if (_myMsgController.text != "")
+                              submitMsg(_myMsgController.text);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(),
+                            padding: EdgeInsets.all(12),
                           ),
                         ),
                       ],

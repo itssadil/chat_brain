@@ -1,4 +1,5 @@
 import 'package:chatbrain/providers/msgListProvider.dart';
+import 'package:chatbrain/providers/speechToTextProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,9 +11,12 @@ void main() async {
   await Firebase.initializeApp();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => MsgListProvider(),
-      child: const MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MsgListProvider()),
+        ChangeNotifierProvider(create: (_) => SpeachToTextProvider()),
+      ],
+      child: MyApp(),
     ),
   );
 }
