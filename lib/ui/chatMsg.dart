@@ -17,7 +17,7 @@ class ChatMsg extends StatelessWidget {
             50.0,
             10.0,
             true,
-            Text(
+            SelectableText(
               msgTxt,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
@@ -30,7 +30,7 @@ class ChatMsg extends StatelessWidget {
             10.0,
             50.0,
             false,
-            Text(
+            SelectableText(
               msgTxt,
               style: TextStyle(
                 fontWeight: FontWeight.w500,

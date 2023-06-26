@@ -26,6 +26,13 @@ class _HomePageState extends State<HomePage> {
 
   String assistantAnswer = "";
 
+  List examples = [
+    "Request for leave due to personal emergency.",
+    "What are some common mistakes to avoid when writing code?",
+    "Explanation of 5*(x-15)=25y with examples.",
+    "Got any creative ideas for a 10 year old’s birthday?",
+  ];
+
   void submitMsg(String text) {
     var chatMsgProvider = Provider.of<MsgListProvider>(context, listen: false);
     chatMsgProvider.addMsgValue(
@@ -97,18 +104,71 @@ class _HomePageState extends State<HomePage> {
               Consumer<MsgListProvider>(
                 builder: (context, myMsg, child) {
                   return Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: ListView.builder(
-                        reverse: true,
-                        shrinkWrap: true,
-                        itemCount: myMsg.myMsg.length,
-                        itemBuilder: (context, index) {
-                          return ChatMsg(myMsg.myMsg[index]["msgValue"],
-                              myMsg.myMsg[index]["sender"]);
-                        },
-                      ),
-                    ),
+                    child: myMsg.myMsg.isEmpty
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/icon.png",
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      "Examples",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Expanded(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: examples.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20.0,
+                                      ),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          submitMsg(examples[index]);
+                                        },
+                                        child: Text(
+                                          examples[index],
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.tealAccent,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
+                        : Align(
+                            alignment: Alignment.bottomRight,
+                            child: ListView.builder(
+                              reverse: true,
+                              shrinkWrap: true,
+                              itemCount: myMsg.myMsg.length,
+                              itemBuilder: (context, index) {
+                                return ChatMsg(myMsg.myMsg[index]["msgValue"],
+                                    myMsg.myMsg[index]["sender"]);
+                              },
+                            ),
+                          ),
                   );
                 },
               ),
@@ -160,48 +220,46 @@ class _HomePageState extends State<HomePage> {
                               contentPadding: EdgeInsets.all(10),
                               labelText: "Send a message",
                               hintText: "Message...",
-                              suffixIcon: GestureDetector(
-                                child: Icon(Icons.mic),
-                                onLongPress: () async {
-                                  var LongPressPro =
-                                      Provider.of<SpeachToTextProvider>(context,
-                                          listen: false);
-                                  LongPressPro.isListeningValue(true);
-                                  var available =
-                                      await speechToText.initialize();
-                                  if (available) {
-                                    speechToText.listen(onResult: (result) {
-                                      LongPressPro.changeRecordText(
-                                          result.recognizedWords);
-                                    });
-                                  }
-                                },
-                                onLongPressUp: () {
-                                  var LongPressPro =
-                                      Provider.of<SpeachToTextProvider>(context,
-                                          listen: false);
-                                  submitMsg(LongPressPro.recordText);
-                                  LongPressPro.isListeningValue(false);
-                                  LongPressPro.changeRecordText("");
-                                  speechToText.cancel();
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  Icons.send,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  if (_myMsgController.text != "")
+                                    submitMsg(_myMsgController.text);
                                 },
                               ),
                             ),
                             // onSubmitted: (value) => myMsg.addMsgValue(value),
                           ),
                         ),
-                        ElevatedButton(
-                          child: Icon(
-                            Icons.send,
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            if (_myMsgController.text != "")
-                              submitMsg(_myMsgController.text);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.all(12),
+                        SizedBox(width: 5),
+                        CircleAvatar(
+                          child: GestureDetector(
+                            child: Icon(Icons.mic),
+                            onLongPress: () async {
+                              var LongPressPro =
+                                  Provider.of<SpeachToTextProvider>(context,
+                                      listen: false);
+                              LongPressPro.isListeningValue(true);
+                              var available = await speechToText.initialize();
+                              if (available) {
+                                speechToText.listen(onResult: (result) {
+                                  LongPressPro.changeRecordText(
+                                      result.recognizedWords);
+                                });
+                              }
+                            },
+                            onLongPressUp: () {
+                              var LongPressPro =
+                                  Provider.of<SpeachToTextProvider>(context,
+                                      listen: false);
+                              submitMsg(LongPressPro.recordText);
+                              LongPressPro.isListeningValue(false);
+                              LongPressPro.changeRecordText("");
+                              speechToText.cancel();
+                            },
                           ),
                         ),
                       ],
