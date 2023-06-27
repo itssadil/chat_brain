@@ -1,3 +1,4 @@
+import 'package:chatbrain/providers/assistantAnswerProvider.dart';
 import 'package:chatbrain/providers/msgListProvider.dart';
 import 'package:chatbrain/providers/speechToTextProvider.dart';
 import 'package:chatbrain/providers/visibleTextFieldProvider.dart';
@@ -17,6 +18,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => MsgListProvider()),
         ChangeNotifierProvider(create: (_) => SpeachToTextProvider()),
         ChangeNotifierProvider(create: (_) => VisibleTextField()),
+        ChangeNotifierProvider(create: (_) => AssistantAnswer()),
       ],
       child: MyApp(),
     ),

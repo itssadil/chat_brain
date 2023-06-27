@@ -81,17 +81,46 @@ class MsgFromGpt extends StatelessWidget {
                     ),
                   ],
                 )
-              : Align(
-                  alignment: Alignment.bottomRight,
-                  child: ListView.builder(
-                    reverse: true,
-                    shrinkWrap: true,
-                    itemCount: myMsg.myMsg.length,
-                    itemBuilder: (context, index) {
-                      return ChatMsg(myMsg.myMsg[index]["msgValue"],
-                          myMsg.myMsg[index]["sender"]);
-                    },
-                  ),
+              : Stack(
+                  children: [
+                    Padding(
+                      padding: !myMsg.isMe
+                          ? EdgeInsets.only(bottom: 8.0)
+                          : EdgeInsets.only(bottom: 0.0),
+                      child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: ListView.builder(
+                          reverse: true,
+                          shrinkWrap: true,
+                          itemCount: myMsg.myMsg.length,
+                          itemBuilder: (context, index) {
+                            return ChatMsg(myMsg.myMsg[index]["msgValue"],
+                                myMsg.myMsg[index]["sender"]);
+                          },
+                        ),
+                      ),
+                    ),
+                    if (!myMsg.isMe)
+                      Positioned(
+                        bottom: -3,
+                        right: -5,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.tealAccent,
+                            shape: CircleBorder(),
+                          ),
+                          onPressed: () {
+                            myMsg.isMeValue(true);
+                            MsgSubmit.sendMsgToChatGPT(
+                                myMsg.myMsg[1]["msgValue"], context);
+                          },
+                          child: Icon(
+                            Icons.replay,
+                            color: Colors.black45,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
         );
       },

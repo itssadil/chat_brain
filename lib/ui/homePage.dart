@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/msgListProvider.dart';
+import '../widgets/myDrawer.dart';
 import 'subUi/msgTxtField.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,6 +20,7 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        drawer: MyDrawer(),
         appBar: AppBar(
           title: Text("Chat Brain"),
           centerTitle: true,
