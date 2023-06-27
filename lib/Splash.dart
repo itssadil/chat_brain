@@ -23,11 +23,6 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
     Firebase.initializeApp();
     myTimer();
-    // FirebaseAuth.instance.currentUser?.uid != null
-    //     ? myTimer()
-    //     : WidgetsBinding.instance.addPostFrameCallback((_) {
-    //         _showCustomDialog(context);
-    //       });
 
     _controller = AnimationController(
       duration: Duration(seconds: 1),

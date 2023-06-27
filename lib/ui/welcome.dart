@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -26,6 +27,26 @@ class _WelcomeState extends State<Welcome> {
 
     if (FirebaseAuth.instance.currentUser != null) {
       print("Google Sign in Successful");
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        FirebaseFirestore.instance.collection('users').add({
+          'name': FirebaseAuth.instance.currentUser?.displayName,
+          'uid': FirebaseAuth.instance.currentUser?.uid,
+          'isDark': 2,
+        }).then((value) {
+          print('Item added to Firestore');
+        }).catchError((error) {
+          print('Failed to add item: $error');
+        });
+      } else {
+        print('Value already exists in Firestore');
+      }
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
