@@ -11,6 +11,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 import '../providers/msgListProvider.dart';
 import '../providers/speechToTextProvider.dart';
+import '../providers/visibleTextFieldProvider.dart';
 import '../widgets/msgBody.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   String assistantAnswer = "";
 
   List examples = [
-    "Request for leave due to personal emergency.",
+    "Request for leave from boss due to personal emergency.",
     "What are some common mistakes to avoid when writing code?",
     "Explanation of 5*(x-15)=25y with examples.",
     "Got any creative ideas for a 10 year old’s birthday?",
@@ -194,75 +195,149 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-              Consumer<SpeachToTextProvider>(
-                builder: (context, isListening, child) {
-                  return isListening.isListening
-                      ? Center(child: Text(isListening.recordText))
-                      : Center();
+              Consumer<VisibleTextField>(
+                builder: (context, isTextField, child) {
+                  return Visibility(
+                    visible: isTextField.isTextField,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _myMsgController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                contentPadding: EdgeInsets.all(10),
+                                labelText: "Send a message",
+                                hintText: "Message...",
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    Icons.send,
+                                    size: 20,
+                                  ),
+                                  onPressed: () {
+                                    if (_myMsgController.text != "")
+                                      submitMsg(_myMsgController.text);
+                                  },
+                                ),
+                              ),
+                              // onSubmitted: (value) => myMsg.addMsgValue(value),
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          CircleAvatar(
+                            child: GestureDetector(
+                              child: Icon(Icons.mic),
+                              onTap: () async {
+                                isTextField.isTextFieldValue(false);
+                                var LongPressPro =
+                                    Provider.of<SpeachToTextProvider>(context,
+                                        listen: false);
+                                LongPressPro.isListeningValue(true);
+                                var available = await speechToText.initialize();
+                                if (available) {
+                                  speechToText.listen(onResult: (result) {
+                                    LongPressPro.changeRecordText(
+                                        result.recognizedWords);
+                                  });
+                                }
+                              },
+                              // onLongPress: () async {
+                              //   var LongPressPro =
+                              //       Provider.of<SpeachToTextProvider>(context,
+                              //           listen: false);
+                              //   LongPressPro.isListeningValue(true);
+                              //   var available = await speechToText.initialize();
+                              //   if (available) {
+                              //     speechToText.listen(onResult: (result) {
+                              //       LongPressPro.changeRecordText(
+                              //           result.recognizedWords);
+                              //     });
+                              //   }
+                              // },
+                              // onLongPressUp: () {
+                              //   var LongPressPro =
+                              //       Provider.of<SpeachToTextProvider>(context,
+                              //           listen: false);
+                              //   submitMsg(LongPressPro.recordText);
+                              //   LongPressPro.isListeningValue(false);
+                              //   LongPressPro.changeRecordText("");
+                              //   speechToText.cancel();
+                              // },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
               ),
-              Consumer<MsgListProvider>(
-                builder: (context, myMsg, child) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 10,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _myMsgController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              contentPadding: EdgeInsets.all(10),
-                              labelText: "Send a message",
-                              hintText: "Message...",
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  Icons.send,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  if (_myMsgController.text != "")
-                                    submitMsg(_myMsgController.text);
-                                },
-                              ),
-                            ),
-                            // onSubmitted: (value) => myMsg.addMsgValue(value),
-                          ),
+              Consumer<VisibleTextField>(
+                builder: (context, isTextField, child) {
+                  return Visibility(
+                    visible: !isTextField.isTextField,
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      decoration: BoxDecoration(
+                        color: Colors.tealAccent,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(30),
                         ),
-                        SizedBox(width: 5),
-                        CircleAvatar(
-                          child: GestureDetector(
-                            child: Icon(Icons.mic),
-                            onLongPress: () async {
-                              var LongPressPro =
-                                  Provider.of<SpeachToTextProvider>(context,
-                                      listen: false);
-                              LongPressPro.isListeningValue(true);
-                              var available = await speechToText.initialize();
-                              if (available) {
-                                speechToText.listen(onResult: (result) {
-                                  LongPressPro.changeRecordText(
-                                      result.recognizedWords);
-                                });
-                              }
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            spreadRadius: 4,
+                            blurRadius: 10,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Consumer<SpeachToTextProvider>(
+                            builder: (context, isListening, child) {
+                              return Text(
+                                isListening.recordText == ""
+                                    ? "I'm listening..."
+                                    : isListening.recordText,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              );
                             },
-                            onLongPressUp: () {
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              isTextField.isTextFieldValue(true);
                               var LongPressPro =
                                   Provider.of<SpeachToTextProvider>(context,
                                       listen: false);
-                              submitMsg(LongPressPro.recordText);
+                              if (LongPressPro.recordText != "")
+                                submitMsg(LongPressPro.recordText);
                               LongPressPro.isListeningValue(false);
                               LongPressPro.changeRecordText("");
                               speechToText.cancel();
                             },
+                            child: Stack(
+                              children: [
+                                SpinKitDoubleBounce(
+                                  color: Colors.black,
+                                  size: 40.0,
+                                ),
+                                SpinKitSpinningLines(
+                                  color: Colors.tealAccent,
+                                  size: 40.0,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },

@@ -1,5 +1,6 @@
 import 'package:chatbrain/providers/msgListProvider.dart';
 import 'package:chatbrain/providers/speechToTextProvider.dart';
+import 'package:chatbrain/providers/visibleTextFieldProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => MsgListProvider()),
         ChangeNotifierProvider(create: (_) => SpeachToTextProvider()),
+        ChangeNotifierProvider(create: (_) => VisibleTextField()),
       ],
       child: MyApp(),
     ),

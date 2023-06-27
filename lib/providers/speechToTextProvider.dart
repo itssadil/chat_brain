@@ -4,7 +4,7 @@ class SpeachToTextProvider with ChangeNotifier {
   bool _isListening = false;
   bool get isListening => _isListening;
 
-  String _recordText = '';
+  String _recordText = "";
   String get recordText => _recordText;
 
   isListeningValue(value) {
