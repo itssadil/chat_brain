@@ -111,8 +111,8 @@ class MsgFromGpt extends StatelessWidget {
                           ),
                           onPressed: () {
                             myMsg.isMeValue(true);
-                            MsgSubmit.sendMsgToChatGPT(
-                                myMsg.myMsg[1]["msgValue"], context);
+                            MsgSubmit.sendMsgToChatGPT(myMsg.ques[0], context);
+                            print(myMsg.ques[0]);
                           },
                           child: Icon(
                             Icons.replay,
