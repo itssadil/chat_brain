@@ -1,4 +1,4 @@
-#Chat Brain: Your Intelligent Conversational Companion
+# Chat Brain: Your Intelligent Conversational Companion
 
 Introducing Chat Brain, a revolutionary AI-powered chat application that aims to redefine the way you interact and communicate with technology. Whether you need assistance, engage in a friendly conversation, or seek information, Chat Brain is here to provide a seamless and enriching experience.
 
